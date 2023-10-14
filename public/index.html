@@ -1,0 +1,77 @@
+<!-- /public/index.html -->
+<!DOCTYPE html>
+<html>
+
+<head>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+
+<body>
+    <h1>Cricket Player Information</h1>
+    <div id="admin-form">
+        <h2>Add Player Information</h2>
+        <form id="player-form">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" required placeholder="Player Name">
+            <br>
+
+            <label for="dob">Date of Birth:</label>
+            <input type="date" id="dob" name="dob" required>
+            <br>
+
+            <label for="photo">Photo URL:</label>
+            <input type="text" id="photo" name="photo" placeholder="URL to Player's Photo">
+            <br>
+
+            <label for="birthplace">Birthplace:</label>
+            <input type="text" id="birthplace" name="birthplace" placeholder="Player's Birthplace">
+            <br>
+
+            <label for="career-description">Career Description:</label>
+            <textarea id="career-description" name="career-description"
+                placeholder="Brief career description"></textarea>
+            <br>
+
+            <label for="matches">Number of Matches:</label>
+            <input type="number" id="matches" name="matches" required placeholder="Number of Matches">
+            <br>
+
+            <label for="scores">Scores:</label>
+            <input type="text" id="scores" name="scores" placeholder="Player's Scores">
+            <br>
+
+            <label for="fifties">Fifties:</label>
+            <input type="number" id="fifties" name="fifties" placeholder="Number of Fifties">
+            <br>
+
+            <label for="centuries">Centuries:</label>
+            <input type="number" id="centuries" name="centuries" placeholder="Number of Centuries">
+            <br>
+
+            <label for="wickets">Wickets:</label>
+            <input type="number" id="wickets" name="wickets" placeholder="Number of Wickets">
+            <br>
+
+            <label for="average">Average:</label>
+            <input type="number" id="average" name="average" placeholder="Player's Average">
+            <br>
+
+            <button type="submit">Submit</button>
+        </form>
+    </div>
+    <div id="player-list">
+        <!-- Display player profiles -->
+    </div>
+    <!-- Search player field -->
+    <div id="search-field" class="search-field">
+        <label for="search">Search Player:</label>
+        <input type="text" id="search" name="search" placeholder="Player name or keyword">
+        <button id="search-button" onclick="fetchPlayerList()">Search</button>
+
+    </div>
+    <script src="js/script.js">
+        
+    </script>
+</body>
+
+</html>
