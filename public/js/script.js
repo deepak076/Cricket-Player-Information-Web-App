@@ -2,36 +2,33 @@ document.addEventListener('DOMContentLoaded', () => {
     const playerForm = document.getElementById('player-form');
 
     playerForm.addEventListener('submit', (e) => {
-        e.preventDefault(); // Prevent the default form submission
+        e.preventDefault();
 
         const formData = new FormData(playerForm);
-
         const formDataObject = {};
         for (let [key, value] of formData.entries()) {
             formDataObject[key] = value;
         }
 
-        const formDataJSON = JSON.stringify(formDataObject);
+        // Use the "playerId" to specify the player you want to edit
+        const playerId = formDataObject.playerId;
 
-        fetch('/players', {
-            method: 'POST',
+        fetch(`/players/${playerId}`, { // Replace with the correct endpoint
+            method: 'PUT', // Use PUT or PATCH to update the existing player data
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: formDataJSON,
+            body: JSON.stringify(formDataObject),
         })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Response from the server:', data);
-                clearFormFields();
-            })
-            .catch(error => console.error('Error saving player data:', error));
+        .then(response => response.json())
+        .then(data => {
+            console.log('Response from the server:', data);
+            clearFormFields();
+        })
+        .catch(error => console.error('Error updating player data:', error));
     });
-
-    function clearFormFields() {
-        playerForm.reset();
-    }
 });
+
 
 function fetchPlayerList() {
     const searchInput = document.getElementById('search').value;
@@ -52,7 +49,9 @@ function fetchPlayerList() {
 
 function displayPlayerResults(results) {
     const playerList = document.getElementById('player-list');
-    playerList.innerHTML = ''; // Clear the previous results
+
+    // Clear the previous results
+    playerList.innerHTML = '';
 
     results.forEach(player => {
         const playerDiv = document.createElement('div');
@@ -60,34 +59,62 @@ function displayPlayerResults(results) {
 
         // Display player image, name, and country
         const playerInfo = `
-    <img src="${player.photo}" alt="${player.name}">
-    <h2>${player.name}</h2>
-    <p>Personal Information</p>
-    <p>Date of Birth: ${player.dob}</p>
-    <p>Birthplace: ${player.birthplace}</p>
-    `;
+            <div class="player-info-container">
+                <img class="player-image" src="${player.photo}" alt="${player.name}">
+                <div>
+                    <h2>${player.name}</h2>
+                    <p>Personal Information</p>
+                    <p>Date of Birth: ${player.dob}</p>
+                    <p>Birthplace: ${player.birthplace}</p>
+                </div>
+            </div>
+        `;
 
         // Display career information
         const careerInfo = `
-    <p>Career Information</p>
-    <p>Career Description: ${player.career_description}</p>
-    <p>Number of Matches: ${player.matches}</p>
-    <p>Scores: ${player.scores}</p>
-    <p>Fifties: ${player.fifties}</p>
-    <p>Centuries: ${player.centuries}</p>
-    <p>Wickets: ${player.wickets}</p>
-    <p>Average: ${player.average}</p>
-    `;
+            <p>Career Information</p>
+            <p>Career Description: ${player.career_description}</p>
+            <p>Number of Matches: ${player.matches}</p>
+            <p>Scores: ${player.scores}</p>
+            <p>Fifties: ${player.fifties}</p>
+            <p>Centuries: ${player.centuries}</p>
+            <p>Wickets: ${player.wickets}</p>
+            <p>Average: ${player.average}</p>
+        `;
 
         playerDiv.innerHTML = playerInfo + careerInfo;
+
+        // Create the "Edit Player" button
+        const editButton = document.createElement('button');
+        editButton.className = 'edit-button';
+        editButton.textContent = 'Edit Player';
+
+        // Add an event listener to the "Edit Player" button
+        editButton.addEventListener('click', function () {
+            editPlayer(player);
+        });
+
+        // Append the "Edit Player" button to the playerDiv
+        playerDiv.appendChild(editButton);
+
         playerList.appendChild(playerDiv);
     });
 }
 
 
-
-
-
 function editPlayer(player) {
-    console.log('Edit player:', player);
+    // Populate the form fields with the player's data for editing
+    document.getElementById('playerId').value = player.id; // Assuming "id" is the unique identifier
+    document.getElementById('name').value = player.name;
+    document.getElementById('dob').value = player.dob.split('T')[0]; // Display date without time
+    document.getElementById('photo').value = player.photo;
+    document.getElementById('birthplace').value = player.birthplace;
+    document.getElementById('career-description').value = player.career_description;
+    document.getElementById('matches').value = player.matches;
+    document.getElementById('scores').value = player.scores;
+    document.getElementById('fifties').value = player.fifties;
+    document.getElementById('centuries').value = player.centuries;
+    document.getElementById('wickets').value = player.wickets;
+    document.getElementById('average').value = player.average;
 }
+
