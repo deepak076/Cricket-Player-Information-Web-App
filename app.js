@@ -57,7 +57,6 @@ app.post('/players', (req, res) => {
     });
 });
 
-// Search for players by name
 app.get('/search', (req, res) => {
     const { name } = req.query;
     const sql = 'SELECT * FROM players WHERE name LIKE ?';
@@ -72,15 +71,13 @@ app.get('/search', (req, res) => {
     });
 });
 
+
 app.put('/players/:id', (req, res) => {
     const playerId = req.params.id;
     const playerData = req.body;
+
     // Define the SQL query for updating an existing player
     const sql = `UPDATE players SET name = ?, dob = ?, photo = ?, birthplace = ?, career_description = ?, matches = ?, scores = ?, fifties = ?, centuries = ?, wickets = ?, average = ? WHERE id = ?`;
-
-    // Log SQL query and player data for debugging
-    console.log('SQL Query:', sql);
-    console.log('Player Data:', [playerData.name, playerData.dob, playerData.photo, playerData.birthplace, playerData.career_description, playerData.matches, playerData.scores, playerData.fifties, playerData.centuries, playerData.wickets, playerData.average, playerId]);
 
     db.query(sql, [
         playerData.name,
@@ -104,6 +101,29 @@ app.put('/players/:id', (req, res) => {
         res.json({ success: true });
     });
 });
+
+app.get('/players/:id', (req, res) => {
+    const playerId = req.params.id;
+
+    // Fetch player data by ID from the database
+    // Replace this comment with your actual database query to retrieve player data
+    db.query('SELECT * FROM players WHERE id = ?', [playerId], (err, results) => {
+        if (err) {
+            console.error('Error fetching player data:', err.message);
+            return res.status(500).json({ success: false, error: err.message });
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ success: false, error: 'Player not found' });
+        }
+
+        const playerData = results[0]; // Assuming you retrieve one player's data
+
+        // Send a JSON response with the player's data
+        res.json({ success: true, data: playerData });
+    });
+});
+
 
 
 const PORT = 3000;

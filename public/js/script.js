@@ -1,51 +1,101 @@
+// /public/js/script.js
 document.addEventListener('DOMContentLoaded', () => {
     const playerForm = document.getElementById('player-form');
 
     playerForm.addEventListener('submit', (e) => {
         e.preventDefault();
-
+    
         const formData = new FormData(playerForm);
         const formDataObject = {};
         for (let [key, value] of formData.entries()) {
             formDataObject[key] = value;
         }
-
-        // Use the "playerId" to specify the player you want to edit
-        const playerId = formDataObject.playerId;
-
-        fetch(`/players/${playerId}`, { // Replace with the correct endpoint
-            method: 'PUT', // Use PUT or PATCH to update the existing player data
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(formDataObject),
-        })
-        .then(response => response.json())
-        .then(data => {
-            console.log('Response from the server:', data);
-            clearFormFields();
-        })
-        .catch(error => console.error('Error updating player data:', error));
+    
+        // Assuming you have a playerId in your HTML with the value of the player's ID
+        const playerId = document.getElementById('playerId').value;
+    
+        // Check if playerId exists, if so, send a PUT request to update the player's data
+        if (playerId) {
+            fetch(`/players/${playerId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formDataObject),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Player data updated successfully
+                        // You can handle this as needed, e.g., close the editing form.
+    
+                        // Clear the form fields
+                        playerForm.reset();
+                    } else {
+                        console.error('Error updating player data:', data.error);
+                    }
+                })
+                .catch(error => console.error('Error updating player data:', error));
+        } else {
+            // If playerId doesn't exist, it means you are creating a new player.
+            // Send a POST request to create a new player.
+            fetch('/players', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formDataObject),
+            })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // Player data created successfully
+    
+                        // Clear the form fields
+                        playerForm.reset();
+    
+                        // You can also optionally add code to close the form or show a success message.
+                    } else {
+                        console.error('Error creating player data:', data.error);
+                    }
+                })
+                .catch(error => console.error('Error creating player data:', error));
+        }
     });
 });
 
 
+
+
 function fetchPlayerList() {
-    const searchInput = document.getElementById('search').value;
-    fetch(`/search?name=${searchInput}`, {
-        method: 'GET',
-    })
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                console.log(data);
-                displayPlayerResults(data.data);
-            } else {
-                console.error('Error searching for players:', data.error);
-            }
-        })
-        .catch(error => console.error('Error searching for players:', error));
+    const searchField = document.getElementById('search');
+    const searchValue = searchField.value.trim();
+
+    // Check if the search field is not empty
+    if (searchValue) {
+        // Construct the search URL
+        const searchURL = `/search?name=${searchValue}`;
+
+        // Send a GET request to the search URL
+        fetch(searchURL)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    displayPlayerResults(data.data); // Display the search results
+                } else {
+                    console.error('Error searching for players:', data.error);
+                }
+            })
+            .catch(error => console.error('Error searching for players:', error));
+    } else {
+        // Clear the player list if the search field is empty
+        const playerList = document.getElementById('player-list');
+        playerList.innerHTML = '';
+    }
 }
+
+
+
 
 function displayPlayerResults(results) {
     const playerList = document.getElementById('player-list');
@@ -103,18 +153,36 @@ function displayPlayerResults(results) {
 
 
 function editPlayer(player) {
-    // Populate the form fields with the player's data for editing
-    document.getElementById('playerId').value = player.id; // Assuming "id" is the unique identifier
-    document.getElementById('name').value = player.name;
-    document.getElementById('dob').value = player.dob.split('T')[0]; // Display date without time
-    document.getElementById('photo').value = player.photo;
-    document.getElementById('birthplace').value = player.birthplace;
-    document.getElementById('career-description').value = player.career_description;
-    document.getElementById('matches').value = player.matches;
-    document.getElementById('scores').value = player.scores;
-    document.getElementById('fifties').value = player.fifties;
-    document.getElementById('centuries').value = player.centuries;
-    document.getElementById('wickets').value = player.wickets;
-    document.getElementById('average').value = player.average;
+    const playerId = player.id; // Get the player's ID
+
+    // Construct the correct URL for the GET request
+    const url = `/players/${playerId}`;
+
+    // Fetch the player's existing data using a GET request
+    fetch(url, {
+        method: 'GET',
+    })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Populate the form fields with the existing player's data
+                document.getElementById('playerId').value = player.id; // Assuming "id" is the unique identifier
+                document.getElementById('name').value = data.data.name;
+                document.getElementById('dob').value = data.data.dob.split('T')[0];
+                document.getElementById('photo').value = data.data.photo;
+                document.getElementById('birthplace').value = data.data.birthplace;
+                document.getElementById('career-description').value = data.data.career_description;
+                document.getElementById('matches').value = data.data.matches;
+                document.getElementById('scores').value = data.data.scores;
+                document.getElementById('fifties').value = data.data.fifties;
+                document.getElementById('centuries').value = data.data.centuries;
+                document.getElementById('wickets').value = data.data.wickets;
+                document.getElementById('average').value = data.data.average;
+            } else {
+                console.error('Error fetching player data:', data.error);
+            }
+        })
+        .catch(error => console.error('Error fetching player data:', error));
 }
+
 
