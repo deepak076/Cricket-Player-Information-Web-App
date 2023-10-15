@@ -72,6 +72,40 @@ app.get('/search', (req, res) => {
     });
 });
 
+app.put('/players/:id', (req, res) => {
+    const playerId = req.params.id;
+    const playerData = req.body;
+    // Define the SQL query for updating an existing player
+    const sql = `UPDATE players SET name = ?, dob = ?, photo = ?, birthplace = ?, career_description = ?, matches = ?, scores = ?, fifties = ?, centuries = ?, wickets = ?, average = ? WHERE id = ?`;
+
+    // Log SQL query and player data for debugging
+    console.log('SQL Query:', sql);
+    console.log('Player Data:', [playerData.name, playerData.dob, playerData.photo, playerData.birthplace, playerData.career_description, playerData.matches, playerData.scores, playerData.fifties, playerData.centuries, playerData.wickets, playerData.average, playerId]);
+
+    db.query(sql, [
+        playerData.name,
+        playerData.dob,
+        playerData.photo,
+        playerData.birthplace,
+        playerData.career_description,
+        playerData.matches,
+        playerData.scores,
+        playerData.fifties,
+        playerData.centuries,
+        playerData.wickets,
+        playerData.average,
+        playerId
+    ], (err, result) => {
+        if (err) {
+            console.error('Error updating player data: ' + err.message);
+            return res.status(500).json({ success: false, error: err.message });
+        }
+        console.log('Player data updated.');
+        res.json({ success: true });
+    });
+});
+
+
 const PORT = 3000;
 app.listen(PORT, () => {
     console.log(`Server is running on http://localhost:${PORT}`);
