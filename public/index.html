@@ -1,4 +1,3 @@
-<!-- /public/index.html -->
 <!DOCTYPE html>
 <html>
 
@@ -28,7 +27,7 @@
             <br>
 
             <label for="career-description">Career Description:</label>
-            <textarea id="career-description" name="career-description"
+            <textarea id="career-description" name="career_description"
                 placeholder="Brief career description"></textarea>
             <br>
 
@@ -53,8 +52,9 @@
             <br>
 
             <label for="average">Average:</label>
-            <input type="number" id="average" name="average" placeholder="Player's Average">
+            <input type="text" id="average" name="average" placeholder="Player's Average">
             <br>
+
 
             <button type="submit">Submit</button>
         </form>
@@ -67,11 +67,8 @@
         <label for="search">Search Player:</label>
         <input type="text" id="search" name="search" placeholder="Player name or keyword">
         <button id="search-button" onclick="fetchPlayerList()">Search</button>
-
     </div>
-    <script src="js/script.js">
-        
-    </script>
+    <script src="js/script.js"></script>
 </body>
 
 </html>
